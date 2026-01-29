@@ -1,0 +1,41 @@
+default_environment: dev
+project_id: 019bfaf8-f6b8-78f1-a24a-f88baa9be541
+environments:
+- name: dev
+- name: staging
+- name: prod
+plugins:
+  extractors:
+  - name: tap-oracle
+    variant: transferwise
+    pip_url: pipelinewise-tap-oracle
+    config:
+      host: ${TAP_ORACLE_HOST}
+      port: ${TAP_ORACLE_PORT}
+      user: ${TAP_ORACLE_USER}
+      password: ${TAP_ORACLE_PASSWORD}
+      sid: ${TAP_ORACLE_SID}
+      default_replication_method: FULL_TABLE
+    select:
+    - SYSTEM-CLIENTES_B2B.*
+  loaders:
+  - name: target-postgres
+    variant: meltanolabs
+    pip_url: meltanolabs-target-postgres
+    config:
+      host: ${TARGET_POSTGRES_HOST}
+      user: ${TARGET_POSTGRES_USER}
+      password: ${TARGET_POSTGRES_PASSWORD}
+      database: ${TARGET_POSTGRES_DATABASE}
+      default_target_schema: public
+  utilities:
+  - name: dbt-postgres
+    variant: dbt-labs
+    pip_url: dbt-core dbt-postgres meltano-dbt-ext~=0.3.0
+    config:
+      dbname: ${DBT_POSTGRES_DBNAME}
+      host: ${DBT_POSTGRES_HOST}
+      schema: ${DBT_POSTGRES_SCHEMA}
+      user: ${DBT_POSTGRES_USER}
+      password: ${DBT_POSTGRES_PASSWORD}
+      port: ${DBT_POSTGRES_PORT}

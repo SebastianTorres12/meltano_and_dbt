@@ -1,0 +1,66 @@
+{
+  "plugin_type": "extractors",
+  "name": "tap-oracle",
+  "namespace": "tap_oracle",
+  "variant": "transferwise",
+  "label": "Oracle DB",
+  "docs": "https://hub.meltano.com/extractors/tap-oracle--transferwise",
+  "repo": "https://github.com/transferwise/pipelinewise-tap-oracle",
+  "pip_url": "pipelinewise-tap-oracle",
+  "description": "Cloud Database",
+  "logo_url": "https://hub.meltano.com/assets/logos/extractors/oracle.png",
+  "capabilities": [
+    "catalog",
+    "discover",
+    "state"
+  ],
+  "settings_group_validation": [
+    [
+      "host",
+      "password",
+      "port",
+      "sid",
+      "user"
+    ]
+  ],
+  "settings": [
+    {
+      "name": "default_replication_method",
+      "label": "Default Replication Method",
+      "description": "The default replication method to use if one is not automatically set on the stream. Options - 'LOG_BASED', 'FULL_TABLE', 'INCREMENTAL'."
+    },
+    {
+      "name": "filter_schemas",
+      "label": "Filter Schemas",
+      "description": "A comma separated list of schema names to scan. Used to improve the performance of data extraction.",
+      "placeholder": "SCHEMA1,SCHEMA2"
+    },
+    {
+      "name": "host",
+      "label": "Host",
+      "description": "Your Oracle host."
+    },
+    {
+      "name": "password",
+      "kind": "string",
+      "label": "Password",
+      "description": "Your Oracle password.",
+      "sensitive": true
+    },
+    {
+      "name": "port",
+      "label": "Port",
+      "description": "Your Oracle port."
+    },
+    {
+      "name": "sid",
+      "label": "SID",
+      "description": "Your Oracle SID."
+    },
+    {
+      "name": "user",
+      "label": "User",
+      "description": "Your Oracle user."
+    }
+  ]
+}

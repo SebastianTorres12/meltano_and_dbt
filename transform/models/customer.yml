@@ -1,0 +1,56 @@
+version: 2
+
+models:
+  - name: customer
+    description: "Tabla final de clientes con contratos y tipos de datos validados"
+    config:
+      contract:
+        enforced: true  # Esto obliga a dbt a validar los tipos de datos en cada ejecución
+    columns:
+      - name: address_number
+        description: "ID principal del cliente (PK)"
+        data_type: integer
+        constraints:
+          - type: primary_key
+          - type: not_null
+
+      - name: name
+        description: "Nombre legal o comercial"
+        data_type: varchar(255)
+        constraints:
+          - type: not_null
+
+      - name: ruc
+        description: "Registro Único de Contribuyentes (Ecuador)"
+        data_type: varchar(13)
+        constraints:
+          - type: not_null
+
+      - name: credit_limit
+        description: "Cupo máximo de crédito asignado"
+        data_type: decimal(12,2)
+
+      - name: payment_method
+        description: "Forma de pago o días de crédito"
+        data_type: varchar(50)
+
+      - name: active
+        description: "Estado lógico del cliente"
+        data_type: boolean
+        constraints:
+          - type: not_null
+
+      - name: created_at
+        description: "Fecha de creación del registro"
+        data_type: timestamp
+        constraints:
+          - type: not_null
+
+      - name: updated_at
+        description: "Fecha de última modificación"
+        data_type: timestamp
+        constraints:
+          - type: not_null
+      - name: row_hash
+        description: "Hash de validación para detectar cambios"
+        data_type: text # O varchar(32)

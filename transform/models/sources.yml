@@ -1,0 +1,6 @@
+version: 2
+sources:
+  - name: oracle_raw_clientes
+    schema: public  # El schema donde target-postgres dejó la data
+    tables:
+      - name: CLIENTES_B2B

@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  # --- ORIGEN: ORACLE ---
+  oracle:
+    image: container-registry.oracle.com/database/express:21.3.0-xe
+    container_name: oracle_source
+    environment:
+      - DBCA_TOTAL_MEMORY=1024
+      - WEB_CONSOLE=true
+      - ORACLE_PWD=oracle
+    ports:
+      - "1580:8080"
+      - "1521:1521"
+    networks:
+      - meltano_network
+
+  # --- DESTINO: POSTGRESQL ---
+  postgres:
+    image: postgres:17.4
+    container_name: postgres_dest
+    environment:
+      - POSTGRES_USER=system
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U system"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - meltano_network
+
+  # --- APP: MELTANO ---
+  meltano:
+    build:
+      context: ..          # Sube un nivel para ver meltano.yml, transform/, etc.
+      dockerfile: docker/Dockerfile
+    container_name: meltano_app
+    entrypoint: ["sh", "-c"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      oracle:
+        condition: service_started
+    env_file:
+      - ../.env            # Carga tus variables desde la raíz
+    environment:
+      - TAP_ORACLE_HOST=oracle
+      - TARGET_POSTGRES_HOST=postgres
+      # --- ESTAS SON LAS QUE DBT NECESITA ---
+      - DBT_POSTGRES_HOST=postgres
+      - DBT_POSTGRES_USER=system
+      - DBT_POSTGRES_PASSWORD=postgres
+      - DBT_POSTGRES_DBNAME=postgres
+      - DBT_POSTGRES_PORT=5432
+      # --------------------------------------
+      - MELTANO_DATABASE_URI=postgresql://system:postgres@postgres:5432/postgres
+    networks:
+      - meltano_network
+    # Comando por defecto para probar que todo fluye
+    #command: ["run", "tap-oracle", "target-postgres", "dbt-postgres:run"]
+    command:
+      - |
+        echo "Dando 60 segundos a Oracle para que respire y cree las tablas..."
+        sleep 60
+        meltano run tap-oracle target-postgres dbt-postgres:run
+
+networks:
+  meltano_network:
+    driver: bridge
