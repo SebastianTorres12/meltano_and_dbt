@@ -1,8 +1,0 @@
-/venv
-/.meltano
-.env
-
-Dockerfile
-.dockerignore
-
-/docker_new
